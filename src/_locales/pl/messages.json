@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc: zamknij | Ctrl + Enter: import z tekstu | Alt + R: zamień dane | Alt + C: wyczyść dane"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Zawsze oglądaj w trybie pełnego powiększenia"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "Aby przewijać wideo, należy przytrzymać klawisz Ctrl"
   }

@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc: bezár | Ctrl + Enter: import szövegből | Alt + R: adatok cseréje | Alt + C: adatok törlése"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Mindig teljes zoom módban nézze meg"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "A Ctrl billentyűt lenyomva kell tartani a videó görgetéséhez"
   }

@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc: fechar | Ctrl + Enter: importar do texto | Alt + R: substituir dados | Alt + C: limpar dados"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Visualize sempre no modo Zoom total"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "Ctrl deve ser pressionado para rolar o vídeo"
   }

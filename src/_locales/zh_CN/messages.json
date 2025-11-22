@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc：关闭 | Ctrl + Enter：从文本导入 | Alt + R：替换数据 | Alt + C：清除数据"
   },
+  "HZ_FZDEFAULT": {
+    "message": "始终以全缩放模式查看"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "必须按住 Ctrl 才能滚动视频"
   }

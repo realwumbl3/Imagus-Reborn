@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc: sluiten | Ctrl + Enter: importeren uit tekst | Alt + R: gegevens vervangen | Alt + C: duidelijke gegevens"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Bekijk altijd in volledige zoommodus"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "Ctrl moet ingedrukt worden gehouden om door de video te scrollen"
   }

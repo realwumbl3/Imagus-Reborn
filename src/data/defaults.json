@@ -27,6 +27,7 @@
 		"capText": true,
 		"capLinkText": true,
 		"capFlashCount": 1,
+		"fzDefault": false,
 		"fzMode": 1,
 		"fzOnPress": 2,
 		"follow": true,

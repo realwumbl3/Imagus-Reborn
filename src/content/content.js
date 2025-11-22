@@ -1118,6 +1118,10 @@
                     if (PVI.state === 2) PVI.anim.opacityTransition();
                     else setTimeout(PVI.anim.opacityTransition, 0);
                 PVI.state = PVI.BOX === PVI.LDR ? 3 : 4;
+
+                if (cfg.hz.fzDefault) {
+                    PVI.fzEnable();
+                }
             }
             var x = PVI.x;
             var y = PVI.y;
@@ -2012,10 +2016,11 @@
         },
 
         fzEnable: function (e) {
+            if (!e && PVI.fullZm) return;
             win.removeEventListener("mouseover", PVI.m_over, true);
             doc.removeEventListener("wheel", PVI.scroller, true);
             doc.documentElement.removeEventListener("mouseleave", PVI.m_leave, false);
-            PVI.fullZm = (cfg.hz.fzMode !== 1) !== !e.shiftKey ? 1 : 2;
+            PVI.fullZm = (cfg.hz.fzMode !== 1) !== !e?.shiftKey ? 1 : 2;
             PVI.switchToHiResInFZ();
             if (PVI.anim.maxDelay)
                 setTimeout(function () {

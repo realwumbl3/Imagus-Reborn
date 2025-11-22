@@ -323,6 +323,9 @@
   "HZ_CAP_TEXT": {
     "message": "Show caption text"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Always view in Full-zoom mode"
+  },
   "HZ_FZMODE": {
     "message": "Default mode"
   },

@@ -491,6 +491,9 @@
   "IMPR_HINT": {
     "message": "Esc: schließen | Ctrl + Enter: Aus Text importieren | Alt + R: Daten ersetzen | Alt + C: Daten löschen"
   },
+  "HZ_FZDEFAULT": {
+    "message": "Immer im Vollzoommodus anzeigen"
+  },
   "SC_SCRLVIDWITHKEY": {
     "message": "Zum Scrollen des Videos muss die Strg-Taste gedrückt gehalten werden"
   }
