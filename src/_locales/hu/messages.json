@@ -490,5 +490,8 @@
   },
   "IMPR_HINT": {
     "message": "Esc: bezár | Ctrl + Enter: import szövegből | Alt + R: adatok cseréje | Alt + C: adatok törlése"
+  },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "A Ctrl billentyűt lenyomva kell tartani a videó görgetéséhez"
   }
 }

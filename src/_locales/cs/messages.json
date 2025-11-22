@@ -490,5 +490,8 @@
   },
   "IMPR_HINT": {
     "message": "Esc: zavřít | Ctrl + Enter: import z textu | Alt + R: nahradit data | Alt + C: vymazání dat"
+  },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "Chcete-li posouvat video, musíte podržet Ctrl"
   }
 }

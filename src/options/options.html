@@ -400,20 +400,28 @@ ImgOps|http://imgops.com/%raw_url</textarea>
 		</section>
 
 		<section id="tools_sec">
-			<div class="prow advanced">
-				<label for="hz_scOffInInput" data-lng="HZ_SCOFFININPUT"></label>
+			<div class="prow left advanced">
 				<span>
 					<input id="hz_scOffInInput" name="hz_scOffInInput" type="checkbox" checked>
 					<label for="hz_scOffInInput" class="checkbox"></label>
 				</span>
+				<label for="hz_scOffInInput" data-lng="HZ_SCOFFININPUT"></label>
 			</div>
 
-			<div class="prow advanced">
-				<label for="tls_opzoom" data-lng="OP_ZOOM"></label>
+			<div class="prow left advanced">
 				<span>
 					<input id="tls_opzoom" name="tls_opzoom" type="checkbox">
 					<label for="tls_opzoom" class="checkbox"></label>
 				</span>
+				<label for="tls_opzoom" data-lng="OP_ZOOM"></label>
+			</div>
+
+			<div class="prow left">
+				<span>
+					<input id="hz_scrollVideoWithCtrl" name="hz_scrollVideoWithCtrl" type="checkbox">
+					<label for="hz_scrollVideoWithCtrl" class="checkbox"></label>
+				</span>
+				<label for="hz_scrollVideoWithCtrl" data-lng="SC_SCRLVIDWITHKEY"></label>
 			</div>
 
 			<ul class="sub_shortcuts">
@@ -462,16 +470,17 @@ ImgOps|http://imgops.com/%raw_url</textarea>
 				<ul>
 					<li>Over the image/media</li>
 					<li>When cursor changes to <i class="cur_zmin">zoom-in</i></li>
+					<li><b>+ Alt</b> Anywhere</li>
 				</ul>
 				<li><b>Wheel</b> to scroll album:</li>
 				<ul>
 					<li>Outside of the image/media</li>
-					<li>Near to borders of the window (100px)</li>
+					<li>Near (100px) to the borders of the browser window</li>
 					<li><b>+ Shift</b> Anywhere</li>
 				</ul>
 				<li><b>Wheel</b> to navigate media (backward/forward 5s):</li>
 				<ul>
-					<li>Outside of the media without album</li>
+					<li>(<b>+ Ctrl</b> if enabled above) Outside of the media without album</li>
 					<li><b>+ Ctrl</b> in album or over the media</li>
 				</ul>
 			</ul>

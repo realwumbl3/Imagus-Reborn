@@ -490,5 +490,8 @@
   },
   "IMPR_HINT": {
     "message": "Esc: sluiten | Ctrl + Enter: importeren uit tekst | Alt + R: gegevens vervangen | Alt + C: duidelijke gegevens"
+  },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "Ctrl moet ingedrukt worden gehouden om door de video te scrollen"
   }
 }

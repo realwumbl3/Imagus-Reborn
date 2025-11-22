@@ -490,5 +490,8 @@
   },
   "IMPR_HINT": {
     "message": "Esc: cerrar | Ctrl + Enter: importar desde texto | Alt + R: reemplazar datos | Alt + C: borrar datos"
+  },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "Se debe mantener presionada la tecla Ctrl para desplazar el video."
   }
 }

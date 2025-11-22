@@ -260,6 +260,15 @@ nav > .active {
 .prow > span:not(.clean) {
     box-sizing: border-box;
     display: inline-block;
+    line-height: 18px;
+}
+.prow.left {
+    justify-content: flex-start;
+    margin-left: 30px;
+}
+
+.prow.left > label {
+    margin-left: 4px;
 }
 label {
     cursor: pointer;

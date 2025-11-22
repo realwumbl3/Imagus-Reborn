@@ -490,5 +490,8 @@
   },
   "IMPR_HINT": {
     "message": "Esc: zamknij | Ctrl + Enter: import z tekstu | Alt + R: zamień dane | Alt + C: wyczyść dane"
+  },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "Aby przewijać wideo, należy przytrzymać klawisz Ctrl"
   }
 }

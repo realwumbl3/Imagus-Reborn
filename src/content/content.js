@@ -1778,7 +1778,7 @@
 
             if (shortcut.isModifier(e)) {
                 if (PVI.keyup_freeze_on || typeof PVI.freeze === "number") return;
-                if (!e.repeat && PVI.fullZm && e.shiftKey) PVI.m_move(e);
+                if (!e.repeat && PVI.fullZm && (e.shiftKey || e.altKey || e.ctrlKey)) PVI.m_move(e);
                 if (e.repeat || shortcut.key(e) !== cfg.hz.actTrigger) return;
                 if (PVI.fireHide && PVI.state < 3)
                     if (cfg.hz.deactivate) PVI.m_over({ relatedTarget: PVI.TRG });
@@ -1905,24 +1905,24 @@
                     pv = null;
                     if (PVI.CNT === PVI.VID) {
                         pv = true;
-                        if (key === "Space")
+                        if (key === "Space") {
                             if (e.shiftKey) {
                                 if (!PVI.VID.audio) PVI.VID.controls = PVI.VID._controls = !PVI.VID._controls;
                             } else if (PVI.VID.paused) PVI.VID.play();
                             else PVI.VID.pause();
-                        else if ((key === "Right" || key === "Left") && !PVI.TRG.IMGS_album && !e.shiftKey) {
+
+                        } else if ((key === "Right" || key === "Left") && (!PVI.TRG.IMGS_album || PVI.TRG.IMGS_album && e.ctrlKey) && !e.shiftKey) {
                             let delta = key === "Left" ? -5 : 5;
                             PVI.VID.currentTime += delta;
-                        } else if (key === "Up" || key === "Down")
-                            if (e.shiftKey) PVI.VID.playbackRate *= key === "Up" ? 4 / 3 : 0.75;
-                            else pv = null;
-                        else if (!e.shiftKey && (key === "PgUp" || key === "PgDn"))
+                            e.preventDefault?.();
+
+                        } else if (!e.shiftKey && (key === "PgUp" || key === "PgDn")) {
                             if (PVI.VID.audio) PVI.VID.currentTime += key === "PgDn" ? 4 : -4;
                             else {
                                 PVI.VID.pause();
                                 PVI.VID.currentTime = (PVI.VID.currentTime * 25 + (key === "PgDn" ? 1 : -1)) / 25 + 1e-5;
                             }
-                        else pv = null;
+                        } else pv = null;
                     }
                     if (!pv && PVI.TRG.IMGS_album) {
                         switch (key) {
@@ -2098,12 +2098,16 @@
                 PVI.TRG &&
                 // PVI.TRG.IMGS_album &&
                 cfg.hz.pileWheel &&
-                (!PVI.fullZm || e?.shiftKey ||
+                !e?.altKey &&
+                (
+                    !PVI.fullZm ||
+                    e?.shiftKey ||
                     x < gap ||
                     y < gap ||
                     win.innerWidth - x < gap ||
                     win.innerHeight - y < gap ||
-                    (e?.target && !PVI.DIV.contains(e.target))
+                    e?.target && !PVI.DIV.contains(e.target) && (e.clientX >= 0 || e.ctrlKey) ||
+                    e?.ctrlKey && PVI.isVideo()
                 )
             ) {
                 return true;
@@ -2122,7 +2126,7 @@
                 if (e.timeStamp - (PVI.lastScrollTime || 0) < d) d = null;
                 else PVI.lastScrollTime = e.timeStamp;
 
-            if (PVI.isVideo() && (e.ctrlKey || !PVI.TRG.IMGS_album && PVI.shouldScroll(e))) {
+            if (PVI.isVideo() && (e.ctrlKey || !PVI.TRG.IMGS_album && !cfg.hz.scrollVideoWithCtrl && PVI.shouldScroll(e))) {
                 pdsp(e);
                 if (PVI.CNT === PVI.VID) {
                     PVI.key_action({ which: e.deltaY > 0 ? 39 : 37, ctrlKey: true, target: PVI.CNT });
@@ -2417,13 +2421,16 @@
         m_move: function (e) {
             if (e && PVI.x === e.clientX && PVI.y === e.clientY) return;
             if (PVI.fullZm) {
-                if (PVI.shouldScroll(e) && (PVI.TRG.IMGS_album || PVI.isVideo())) {
+                if (PVI.shouldScroll(e) && (PVI.TRG.IMGS_album || PVI.isVideo() && (!cfg.hz.scrollVideoWithCtrl || e?.ctrlKey))) {
                     PVI.setCursor();
                 } else if (e?.target) {
                     PVI.setCursor("zoom-in");
                 }
                 // that's keydown event
-                if (e?.target && !e.clientX) return;
+                if (e?.target && !e.clientX) {
+                    e.preventDefault();
+                    return;
+                }
 
                 var x = PVI.x,
                     y = PVI.y,

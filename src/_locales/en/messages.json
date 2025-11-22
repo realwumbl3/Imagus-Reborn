@@ -227,6 +227,9 @@
   "SC_SENDTO": {
     "message": "Send image to..."
   },
+  "SC_SCRLVIDWITHKEY": {
+    "message": "Ctrl must be held to scroll video"
+  },
   "OP_ZOOM": {
     "message": "Ctrl + Right click on an image puts it into a pop-up"
   },
