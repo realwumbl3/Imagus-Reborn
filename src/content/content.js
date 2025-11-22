@@ -427,7 +427,7 @@
             PVI.palette.wh_fg = e ? "rgb(100, 0, 0)" : "rgb(204, 238, 255)";
             PVI.palette.wh_fg_hd = e ? "rgb(255, 0, 0)" : "rgb(120, 210, 255)";
             PVI.CAP.style.cssText =
-                "left:0; right:auto; display:block; cursor:default; position:absolute; width:auto; height:auto; border:0; white-space: " +
+                "left:0; right:auto; display:block; cursor:inherit; position:absolute; width:auto; height:auto; border:0; white-space: " +
                 (cfg.hz.capWrapByDef ? "pre-line" : "nowrap") +
                 '; font:13px/1.4em "Trebuchet MS",sans-serif; background:rgba(' +
                 (e ? "255,255,255,.95" : "0,0,0,.75") +
