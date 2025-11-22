@@ -4,6 +4,7 @@ let cfg;
 
 const catchEvent = {};
 const app = {};
+const platform = ""; // for backward compatibility
 
 function buildNodes(element, nodes) {
     if (!element || !Array.isArray(nodes)) {
