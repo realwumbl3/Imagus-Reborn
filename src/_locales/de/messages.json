@@ -165,7 +165,7 @@
     "message": "Warten vor Start von weiterem Zoom"
   },
   "HZ_SC_TOGGLE": {
-    "message": "Für die aktuelle Sitzung und Domäne aussetzen"
+    "message": "für die aktuelle Domäne deaktivieren/aktivieren"
   },
   "HZ_SC_PRELOAD": {
     "message": "Bilder manuell vorladen"

@@ -165,7 +165,7 @@
     "message": "Várakozás új nagyítás előtt"
   },
   "HZ_SC_TOGGLE": {
-    "message": "ideiglenes kikapcsolás"
+    "message": "letiltása/engedélyezése az aktuális tartományban"
   },
   "HZ_SC_PRELOAD": {
     "message": "képek előre betöltése"

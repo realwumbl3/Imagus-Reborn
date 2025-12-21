@@ -165,7 +165,7 @@
     "message": "Esperar antes de abrir otro visor"
   },
   "HZ_SC_TOGGLE": {
-    "message": "suspender para el dominio actual por el resto de la sesión"
+    "message": "desactivar/activar para el dominio actual"
   },
   "HZ_SC_PRELOAD": {
     "message": "pre-cargar imágenes manualmente"

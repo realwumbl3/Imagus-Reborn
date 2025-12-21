@@ -226,25 +226,13 @@ function onMessage(message, sender, sendResponse) {
 
     switch (msg.cmd) {
         case "hello": {
-            let blocked = false;
-            let response = {
-                hz: cachedPrefs.hz,
-                sieve: cachedPrefs.sieve,
-                tls: cachedPrefs.tls,
-                keys: cachedPrefs.keys,
-                app: { name: manifest.name, version: manifest.version },
-            };
-            if (cachedPrefs.grants) {
-                for (let i = 0, len = cachedPrefs.grants.length; i < len; ++i) {
-                    let grant = cachedPrefs.grants[i];
-                    if (grant.url === "*" || (grant.op[1] && grant.url.test(context.origin)) || context.origin.indexOf(grant.url) > -1) {
-                        blocked = grant.op[0] === "!";
-                    }
-                }
-            }
-            context.postMessage({ cmd: "hello", prefs: blocked ? null : response });
+            initTab(sender.tab, sendResponse);
             break;
         }
+        case "toggle":
+            toggleTab(sender.tab);
+            break;
+
         case "cfg_get":
             if (!Array.isArray(msg.keys)) {
                 msg.keys = [msg.keys];
@@ -472,7 +460,113 @@ async function autoUpdateSieve(alarm) {
     }
 }
 
-chrome.action.setTitle({ title: `${manifest.name} v${manifest.version}` });
+function initTab(tab, sendResponse) {
+    const resp = {
+        cmd: "hello",
+        prefs: {
+            hz: cachedPrefs.hz,
+            sieve: grantsIsBlocked(tab.url) ? null : cachedPrefs.sieve,
+            tls: cachedPrefs.tls,
+            keys: cachedPrefs.keys,
+            app: { name: manifest.name, version: manifest.version },
+        }
+    };
+
+    if (typeof sendResponse === "function") {
+        sendResponse(resp);
+    } else {
+        chrome.tabs.sendMessage(tab.id, resp);
+    }
+}
+
+async function toggleTab(tab) {
+    if (!tab.url) return;
+    if (grantsIsBlocked(tab.url)) {
+        await grantsRemove(tab.url);
+        if (grantsIsBlocked(tab.url)) {
+            // still blocked, most probably RegEx is used - should be handled manually
+            chrome.tabs.create({ url: "options/options.html#grants" });
+            return;
+        }
+    } else {
+        await grantsAdd(tab.url);
+    }
+
+    updateBadge(tab.id, tab.url);
+
+    // init/deinit tabs with the same origin
+    let tabs = await chrome.tabs.query({ url: new URL(tab.url).origin + "/*" }) || [];
+    tabs.forEach(initTab);
+}
+
+// check if Imagus is disabled on the given URL
+function grantsIsBlocked(url) {
+    if (!url || !cachedPrefs.grants) return false;
+
+    let blocked = false;
+    for (let i = 0, len = cachedPrefs.grants.length; i < len; ++i) {
+        let grant = cachedPrefs.grants[i];
+        if (grant.url === "*" || (grant.op[1] && grant.url.test(url)) || url.indexOf(grant.url) > -1) {
+            blocked = grant.op[0] === "!";
+        }
+    }
+
+    return blocked;
+}
+
+// disable Imagus on the given URL
+async function grantsAdd(url) {
+    if (!url) return;
+    const hostname = new URL(url).hostname;
+    if (!hostname) return;
+    let { grants } = await cfg.get("grants");
+
+    grants.push({ op: "!", url: hostname + "/" });
+    await updatePrefs({ grants: grants });
+}
+
+// enable Imagus on the given URL
+async function grantsRemove(url) {
+    if (!url) return;
+    const hostname = new URL(url).hostname;
+    if (!hostname) return;
+    let { grants } = await cfg.get("grants");
+
+    grants = grants.filter(grant =>
+        grant.url !== hostname + "/" ||
+        grant.op.length > 1 ||
+        grant.op[0] !== "!"
+    );
+    await updatePrefs({ grants: grants });
+}
+
+function updateBadge(tabId, tabUrl) {
+    if (!tabUrl) return;
+    if (grantsIsBlocked(tabUrl)) {
+        chrome.action.setBadgeText({ text: "X", tabId: tabId });
+        chrome.action.setBadgeBackgroundColor({color: "#ff8080ff", tabId: tabId });
+        chrome.action.setBadgeTextColor({ color: "#FFF", tabId: tabId });
+    } else {
+        chrome.action.setBadgeText({ text: "", tabId: tabId });
+    }
+}
+
+// disable/enable Imagus on icon click
+chrome.action.onClicked.addListener(toggleTab);
+
+// update badge on tab update
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    if (!tab.active) return;
+    updateBadge(tabId, tab.url);
+});
+
+// update badge on tab activation
+chrome.tabs.onActivated.addListener(async function(info) {
+    updateBadge(info.tabId, (await chrome.tabs.get(info.tabId)).url);
+});
+
+
+chrome.action.setTitle({ title: `${manifest.name} v${manifest.version}\nClick to toggle on this site` });
 updatePrefs(null, registerContentScripts);
 chrome.runtime.onStartup.addListener(updatePrefs);
 chrome.runtime.onInstalled.addListener(function (e) {

@@ -165,7 +165,7 @@
     "message": "Počkat před zvětšením dalšího obrázku"
   },
   "HZ_SC_TOGGLE": {
-    "message": "deaktivovat Imagus na současné stránce"
+    "message": "zakázat/povolit pro aktuální doménu"
   },
   "HZ_SC_PRELOAD": {
     "message": "přednačíst obrázky na stránce"

@@ -162,7 +162,7 @@
     "message": "Aguardar antes de iniciar outro zoom"
   },
   "HZ_SC_TOGGLE": {
-    "message": "suspender por esta seção e domínio"
+    "message": "desabilitar/habilitar para o domínio atual"
   },
   "HZ_SC_PRELOAD": {
     "message": "pré-carregar imagens manualmente"

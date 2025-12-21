@@ -162,7 +162,7 @@
     "message": "在启动另一次缩放前等待"
   },
   "HZ_SC_TOGGLE": {
-    "message": "在当前会话和域名中临时禁止"
+    "message": "禁用/启用当前域"
   },
   "HZ_SC_PRELOAD": {
     "message": "手动预加载图片"

@@ -165,7 +165,7 @@
     "message": "Wachten voor het starten met een andere zoom"
   },
   "HZ_SC_TOGGLE": {
-    "message": "opschorten voor de huidige sessie en domein"
+    "message": "uitschakelen/inschakelen voor het huidige domein"
   },
   "HZ_SC_PRELOAD": {
     "message": "handmatig afbeeldingen van tevoren laden"

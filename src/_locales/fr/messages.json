@@ -165,7 +165,7 @@
     "message": "Attendre avant d'afficher un nouvel aperçu"
   },
   "HZ_SC_TOGGLE": {
-    "message": "Désactiver pour cette session et ce site"
+    "message": "désactiver/activer pour le domaine actuel"
   },
   "HZ_SC_PRELOAD": {
     "message": "Précharger manuellement les images"

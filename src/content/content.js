@@ -1818,12 +1818,7 @@
                 if (key === cfg.keys.hz_preload) {
                     win.top.postMessage({ vdfDpshPtdhhd: "preload" }, "*");
                 } else if (key === cfg.keys.hz_toggle) {
-                    if (win.sessionStorage.IMGS_suspend) {
-                        delete win.sessionStorage.IMGS_suspend;
-                    } else {
-                        win.sessionStorage.IMGS_suspend = "1";
-                    }
-                    win.top.postMessage({ vdfDpshPtdhhd: "toggle" }, "*");
+                    chrome.runtime.sendMessage({ cmd: "toggle" });
                 } else {
                     pv = false;
                 }
@@ -2796,10 +2791,8 @@
                 }
             } else if (d.cmd === "toggle" || d.cmd === "preload") win.top.postMessage({ vdfDpshPtdhhd: d.cmd }, "*");
             else if (d.cmd === "hello") {
-                var e = !!PVI.DIV;
                 PVI.init(null, true);
                 PVI.init(d);
-                if (e) PVI.create();
             }
         },
 
@@ -2815,6 +2808,7 @@
                 }
                 PVI.lastScrollTRG = null;
             } else {
+                catchEvent.onkeydown = PVI.key_action;
                 if (e !== undefined) {
                     if (!e) {
                         PVI.initOnMouseMoveEnd();
@@ -2822,7 +2816,7 @@
                     }
                     cfg = e.prefs;
                     if (cfg && !cfg.hz.deactivate && cfg.hz.actTrigger === "0") cfg = null;
-                    if (!cfg) {
+                    if (!cfg?.sieve) {
                         PVI.init(null, true);
                         return;
                     }
@@ -2833,16 +2827,16 @@
                         doc.removeEventListener("DOMContentLoaded", pageLoaded);
                         if (doc.body) doc.body.IMGS_c = true;
                         if (cfg.hz.preload === 3) PVI.preload();
+                        PVI.create();
                     };
                     if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", pageLoaded);
                     else pageLoaded();
-                } else if (!cfg) {
+                } else if (!cfg?.sieve) {
                     PVI.initOnMouseMoveEnd();
                     return;
                 }
                 viewportDimensions();
                 Port.listen(PVI.onMessage);
-                catchEvent.onkeydown = PVI.key_action;
                 catchEvent.onmessage = PVI.winOnMessage;
             }
             e = (deinit ? "remove" : "add") + "EventListener";
@@ -2854,9 +2848,6 @@
             win[e]("mousedown", onMouseDown, true);
             win[e]("mouseup", releaseFreeze, true);
             win[e]("dragend", releaseFreeze, true);
-            try {
-                if (!deinit && win.sessionStorage.IMGS_suspend === "1") PVI.toggle(true);
-            } catch (ex) {}
             PVI.initOnMouseMoveEnd(!!PVI.capturedMoveEvent);
             if (!win.MutationObserver) {
                 PVI.attrObserver = null;
@@ -2914,7 +2905,7 @@
             }
             PVI.capturedMoveEvent = e;
             win.top.postMessage({ vdfDpshPtdhhd: "isFrame" }, "*");
-            Port.listen(PVI.init);
+            Port.listen(PVI.onMessage);
             Port.send({ cmd: "hello" });
         },
 

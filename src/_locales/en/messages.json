@@ -171,7 +171,7 @@
     "message": "Wait before start another zoom"
   },
   "HZ_SC_TOGGLE": {
-    "message": "suspend for the current session and domain"
+    "message": "disable/enable for the current domain"
   },
   "HZ_SC_PRELOAD": {
     "message": "manually preload images"

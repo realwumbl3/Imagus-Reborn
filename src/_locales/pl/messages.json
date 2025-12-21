@@ -165,7 +165,7 @@
     "message": "Czekaj przed powiększeniem kolejnego obrazka"
   },
   "HZ_SC_TOGGLE": {
-    "message": "wyłącza / włącza okienko z podglądem dla bieżącej sesji i domeny"
+    "message": "wyłącz/włącz dla bieżącej domeny"
   },
   "HZ_SC_PRELOAD": {
     "message": "ładuj obrazki ręcznie"
