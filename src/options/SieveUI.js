@@ -270,10 +270,10 @@ var sieve_sec,
             const countTotal = sieve_sec.querySelectorAll("#sieve_container > div:not(.hidden)")?.length;
             const countActive = sieve_sec.querySelectorAll("#sieve_container > div:not(.hidden, .disabled)")?.length;
             const cntEl = $("sieve_count");
-            cntEl.textContent = countActive;
-            cntEl.title = cntEl.title.split('\n')[0] + "\nTotal: " + countTotal;
-            if (countTotal) this.info_container.style.display = "none";
-            else {
+            cntEl.textContent = `${countTotal} (${countActive})`;
+            if (countTotal) {
+                this.info_container.style.display = "none";
+            } else {
                 this.info_container.textContent = _(msg || (this.search_f.value.trim() ? "NOMATCH" : "EMPTY"));
                 this.info_container.style.display = "block";
             }
