@@ -1891,7 +1891,7 @@
                         cfg.hz.hiRes = !cfg.hz.hiRes;
                     }
 
-                } else if (key === "Esc") {
+                } else if (key === "Esc" || key === cfg.keys.hz_reset) {
                     if (PVI.CNT === PVI.VID && (win.fullScreen || doc.fullscreenElement || (topWinW === win.screen.width && topWinH === win.screen.height))) {
                         pv = false;
                     } else {
