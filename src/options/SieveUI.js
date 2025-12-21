@@ -626,6 +626,9 @@ var sieve_sec,
             span.className = span.isContentEditable ? "focus" : "";
             if (span.isContentEditable) {
                 span.focus();
+                let sel = window.getSelection();
+                sel.selectAllChildren(span);
+                sel.collapseToEnd();
             }
         },
         formatEditor: function (pre) {
