@@ -148,9 +148,11 @@ async function updatePrefs(prefs, callback) {
     for (let key in defaults) {
         let isChanged = false;
         if (typeof defaults[key] === "object") {
-            newPrefs[key] = prefs[key] || storedPrefs[key] || defaults[key];
             isChanged = true;
-            if (!Array.isArray(defaults[key])) {
+            if (Array.isArray(defaults[key])) {
+                newPrefs[key] = prefs[key] || storedPrefs[key] || defaults[key];
+            } else {
+                newPrefs[key] = Object.assign({}, defaults[key], storedPrefs[key], prefs[key]);
                 for (let subKey in defaults[key]) {
                     if (newPrefs[key][subKey] === undefined ||
                         typeof newPrefs[key][subKey] !== typeof defaults[key][subKey])
