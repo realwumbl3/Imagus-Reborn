@@ -211,6 +211,32 @@
         }
     };
 
+    async function download(msg) {
+        const src = msg?.url || PVI.EXTENSION?.VIDEOJS?.player?.src() || PVI.CNT.src;
+
+        if (msg?.alterDownload) {
+            try {
+                let resp = await fetch(src);
+                resp = await resp.blob();
+                msg.url = URL.createObjectURL(resp);
+                msg.urlName = src.substr(src.lastIndexOf('/') + 1).split('#')[0].split('?')[0];
+
+                Port.send(msg);
+            } catch(e) {
+                alert("Download failed: " + (e.message || e));
+            }
+
+        } else {
+            Port.send({
+                cmd: "download",
+                url: src,
+                priorityExt: (src.match(/#([\da-z]{3,4})$/) || [])[1],
+                ext: { img: "jpg", video: "mp4", audio: "mp3" }[PVI.CNT.audio ? "audio" : PVI.CNT.localName],
+                filename: PVI.CNT.filename,
+            });
+        }
+    }
+
     var PVI = {
         TRG: null,
         DIV: null,
@@ -1827,14 +1853,7 @@
                 pv = !e.ctrlKey;
                 if (e.ctrlKey && key === "S" || !e.ctrlKey && !e.shiftKey && key === cfg.keys.hz_save) {
                     if (!e.repeat && PVI.CNT.src) {
-                        const src = PVI.EXTENSION?.VIDEOJS?.player?.src() || PVI.CNT.src;
-                        Port.send({
-                            cmd: "download",
-                            url: src,
-                            priorityExt: (src.match(/#([\da-z]{3,4})$/) || [])[1],
-                            ext: { img: "jpg", video: "mp4", audio: "mp3" }[PVI.CNT.audio ? "audio" : PVI.CNT.localName],
-                            filename: PVI.CNT.filename,
-                        });
+                        download();
                     }
                     pv = true;
 
@@ -2801,10 +2820,16 @@
                         delete trg.IMGS_c_resolved;
                     } else PVI.show("R_res");
                 }
-            } else if (d.cmd === "toggle" || d.cmd === "preload") win.top.postMessage({ vdfDpshPtdhhd: d.cmd }, "*");
-            else if (d.cmd === "hello") {
+
+            } else if (d.cmd === "toggle" || d.cmd === "preload") {
+                win.top.postMessage({ vdfDpshPtdhhd: d.cmd }, "*");
+
+            } else if (d.cmd === "hello") {
                 PVI.init(null, true);
                 PVI.init(d);
+
+            } else if (d.cmd === "download") {
+                download(d);
             }
         },
 

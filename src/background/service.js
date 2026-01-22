@@ -268,13 +268,7 @@ function onMessage(message, sender, sendResponse) {
             registerContentScripts();
             break;
         case "download":
-            if (msg?.url) {
-                chrome.downloads.download({
-                    url: msg.url,
-                    filename: msg.filename && (msg.ext || msg.priorityExt) ? `${msg.filename}.${msg.priorityExt || msg.ext}` : undefined,
-                    conflictAction: "uniquify"
-                });
-            }
+            download(msg, sender.tab?.incognito, sendResponse);
             break;
         case "history":
             if (chrome.extension?.inIncognitoContext || sender.tab?.incognito) break;
@@ -402,6 +396,52 @@ function onMessage(message, sender, sendResponse) {
     }
     return true;
 }
+
+async function download(msg, incognito, sendResponse) {
+    if (!msg.url) return;
+
+    await chrome.notifications.create(
+        "imagus_download",
+        {
+            title: manifest.name,
+            message: "Download started...",
+            type: "basic",
+            iconUrl: "/common/img/icon.png",
+        },
+    );
+
+    if (!msg.alterDownload) {
+        let resp = await fetch(msg.url, {
+            method: "get",
+            headers: {
+                "Range": "bytes=0-0"
+            }
+        });
+        if (!resp.ok) {
+            msg.alterDownload = true;
+            sendResponse(msg);
+
+            return;
+        }
+    }
+
+    const params = {
+        url: msg.url,
+        filename: msg.filename && (msg.ext || msg.priorityExt) ? `${msg.filename}.${msg.priorityExt || msg.ext}` : (msg.urlName || undefined),
+        conflictAction: "uniquify"
+    };
+
+    if (platform === "firefox") {
+        params.incognito = incognito;
+    }
+
+    chrome.downloads.download(params)
+}
+
+chrome.downloads.onChanged.addListener(change => {
+    if (!change.state) return;
+    chrome.notifications.clear("imagus_download");
+});
 
 function keepAlive() {
     // keep the service worker alive
