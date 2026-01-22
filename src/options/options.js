@@ -658,17 +658,17 @@ window.addEventListener(
 
         $("allow_scripts_message").addEventListener("click", function (event) {
             event.preventDefault();
-switch (this.dataset.type) {
+            switch (this.dataset.type) {
                 case "scripts":
-            chrome.tabs.create({ url: "chrome://extensions/?id=" + chrome.runtime.id + "#:~:text=Allow%20user%20scripts" });
-        break;
+                    chrome.tabs.create({ url: "chrome://extensions/?id=" + chrome.runtime.id + "#:~:text=Allow%20user%20scripts" });
+                    break;
                 case "firefox":
                     chrome.permissions.request({ permissions: ["userScripts"] });
                     break;
                 case "devmode":
                 default:
-            chrome.tabs.create({ url: "chrome://extensions/#:~:text=Developer%20mode" });
-break;
+                    chrome.tabs.create({ url: "chrome://extensions/#:~:text=Developer%20mode" });
+                    break;
             }
         });
 
@@ -685,7 +685,7 @@ document.addEventListener("keydown", function (e) {
 }, true);
 
 async function checkUserScripts() {
-const msg = $("allow_scripts_message");
+    const msg = $("allow_scripts_message");
     try {
         const scripts = await chrome.userScripts.getScripts();
         if (scripts?.length > 0) {
@@ -694,19 +694,19 @@ const msg = $("allow_scripts_message");
             return;
         } else {
             Port.send({ cmd: "loadScripts" });
-                    }
+        }
     } catch(e) {
-if (platform === "firefox") {
+        if (platform === "firefox") {
             msg.dataset.type = "firefox";
             msg.innerHTML = _("ALLOW_USER_SCRIPTS_FF");
-        } else         if (e.message?.includes("API is only available for users in developer mode")) {
+        } else if (e.message?.includes("API is only available for users in developer mode")) {
             msg.dataset.type = "devmode";
             msg.innerHTML = _("ALLOW_DEV_MODE");
         } else {
             msg.dataset.type = "scripts";
             msg.innerHTML = _("ALLOW_USER_SCRIPTS");
         }
-msg.style.display = "block";
+        msg.style.display = "block";
     }
 
     setTimeout(checkUserScripts, 2000);

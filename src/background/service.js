@@ -462,23 +462,23 @@ async function registerContentScripts() {
     await chrome.runtime.onUserScriptMessage?.addListener(onMessage);
     await chrome.userScripts.unregister();
     await chrome.userScripts.register([
-                {
-                    id: "app.js",
+        {
+            id: "app.js",
             allFrames: true,
-                    matches: ["<all_urls>"],
-                    world: "USER_SCRIPT",
-                    runAt: "document_start",
-                    js: [{ file: "common/app.js" }],
-                },
-                {
-                    id: "content.js",
+            matches: ["<all_urls>"],
+            world: "USER_SCRIPT",
+            runAt: "document_start",
+            js: [{ file: "common/app.js" }],
+        },
+        {
+            id: "content.js",
             allFrames: true,
-                    matches: ["<all_urls>"],
-                    runAt: "document_idle",
-                    world: "USER_SCRIPT",
-                    js: [{ file: "content/content.js" }],
-                },
-            ]);
+            matches: ["<all_urls>"],
+            runAt: "document_idle",
+            world: "USER_SCRIPT",
+            js: [{ file: "content/content.js" }],
+        },
+    ]);
 }
 
 // Sieve auto update once a week
