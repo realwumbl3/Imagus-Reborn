@@ -437,7 +437,7 @@ window.onhashchange = function () {
                 d = d.data || d;
                 cfg.sieve = d.cfg.sieve;
                 SieveUI.load();
-                // $("sieve_search").focus();
+                $("sieve_search").focus();
             });
             Port.send({ cmd: "cfg_get", keys: ["sieve"] });
         } else if (hash === "grants")
