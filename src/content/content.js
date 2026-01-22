@@ -2393,7 +2393,7 @@
                     clearTimeout(PVI.timers.resolver);
                     return;
                 }
-                var delay = (PVI.state === 2 || PVI.hideTime) && cfg.hz.waitHide ? PVI.anim.maxDelay : cfg.hz.delay;
+                var delay = (PVI.state === 2 || PVI.hideTime) && cfg.hz.waitHide ? Math.max(PVI.anim.maxDelay, cfg.hz.delay) : cfg.hz.delay;
                 if (delay) PVI.timers.preview = setTimeout(PVI.load, delay);
                 else PVI.load(PVI.SRC);
             } else {
