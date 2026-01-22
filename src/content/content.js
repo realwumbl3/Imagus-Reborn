@@ -1149,7 +1149,7 @@
                     else setTimeout(PVI.anim.opacityTransition, 0);
                 PVI.state = PVI.BOX === PVI.LDR ? 3 : 4;
 
-                if (cfg.hz.fzDefault) {
+                if (cfg.hz.fzDefault && PVI.state === 4) {
                     PVI.fzEnable();
                 }
             }
