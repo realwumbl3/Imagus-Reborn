@@ -700,6 +700,7 @@ var sieve_sec,
             const commitDate = new Date(data[0]?.commit?.committer?.date);
 
             const updBtn = sieve_sec.querySelector("[data-action='update-rules']");
+            updBtn.title = updBtn.title.split("\n")[0];
             if (commitDate > lastCheck) {
                 updBtn.style.outline = "#ffaaaa solid 2px";
                 updBtn.style.filter = "none";
