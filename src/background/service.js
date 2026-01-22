@@ -280,6 +280,9 @@ function onMessage(message, sender, sendResponse) {
                 chrome.history.addUrl({ url: msg.url });
             }
             break;
+        case "options":
+            chrome.runtime.openOptionsPage();
+            break;
         case "open":
             if (!Array.isArray(msg.url)) {
                 msg.url = [msg.url];

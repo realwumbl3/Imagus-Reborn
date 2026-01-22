@@ -2030,7 +2030,7 @@
                         if (!e.shiftKey && !PVI.fullZm) PVI.reset();
                     }
                 } else if (key === cfg.keys.prefs) {
-                    Port.send({ cmd: "open", url: "options/options.html#settings" });
+                    Port.send({ cmd: "options" });
                     if (!PVI.fullZm) PVI.reset();
 
                 } else if (key === "M" && PVI.CNT === PVI.VID) {
