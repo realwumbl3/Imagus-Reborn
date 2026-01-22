@@ -41,11 +41,11 @@ var sieve_sec,
             document.addEventListener("keydown", function (e) {
                 if (document.location.hash !== "#sieve") return;
                 let t = e.target;
-                if (t.nodeName === "SPAN" && (e.code === "Escape" || e.code === "Enter")) {
+                if (t.nodeName === "SPAN" && (e.key === "Escape" || e.key === "Enter")) {
                     e.preventDefault();
                     let rname = t.textContent.trim();
                     if (
-                        e.code === "Escape" &&
+                        e.key === "Escape" &&
                         rname === "" &&
                         t.nextElementSibling.textContent &&
                         [].every.call(t.parentNode.querySelectorAll('input[type="text"], textarea'), function (el) {
@@ -75,7 +75,7 @@ var sieve_sec,
                         t.textContent = t.parentNode.rule = rname;
                         t.contentEditable = false;
                         t.className = "";
-                        if (e.code === "Enter") {
+                        if (e.key === "Enter") {
                             t = t.parentNode.querySelector('input[type="text"]');
                             if (t) t.focus();
                             }
@@ -83,18 +83,18 @@ var sieve_sec,
                     }
                 } else if (t.isContentEditable || t.nodeName === "INPUT" || t.nodeName === "TEXTAREA") {
                     return;
-                } else if (e.code === "Escape") {
+                } else if (e.key === "Escape") {
                     sieve_container.querySelectorAll("div.selected").forEach(el => el.classList.remove("selected"));
                 } else if (e.code === "KeyE" && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
                     SieveUI.export();
-                } else if (e.code === "Delete") {
+                } else if (e.key === "Delete") {
                     e.preventDefault();
                     SieveUI.remove();
-                } else if (e.code === "Space" && (e.ctrlKey || e.metaKey)) {
+                } else if (e.key === "Space" && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
                     SieveUI.disable();
-                } else if (e.code === "KeyI" && (e.ctrlKey || e.metaKey) || e.code === "Insert") {
+                } else if (e.code === "KeyI" && (e.ctrlKey || e.metaKey) || e.key === "Insert") {
                     e.preventDefault();
                     document.querySelector("[data-action='import-rules']").click();
                 }
