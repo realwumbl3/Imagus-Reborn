@@ -404,6 +404,21 @@ var prefs = function (data, options, ev) {
     download(JSON.stringify(data, null, ev.shiftKey ? 2 : 0), app.name + "-conf.json", ev.ctrlKey);
 };
 
+function onValueChange (e) {
+    if (e.stopPropagation) e.stopPropagation();
+    var t = e.target;
+    if (t.placeholder) return;
+
+    const id = t.id || t.name || t.dataset.id;
+    if (t.hasOwnProperty("defChecked") && t.defChecked !== undefined && t.defChecked !== t.checked ||
+        t.hasOwnProperty("defValue") && t.defValue !== undefined && t.defValue != (typeof t.value === "string" ? t.value.trim() : t.value)) {
+        input_changes[id] = true;
+    } else {
+        delete input_changes[id];
+    }
+    $("save_button").classList.toggle("alert", !!Object.keys(input_changes).length);
+}
+
 window.onhashchange = function () {
     var section,
         args = [],
@@ -520,7 +535,6 @@ window.addEventListener(
         };
 
         function keyHandler(e) {
-            if (e.key === "Enter") e.target.form_saved = true;
             var key = shortcut.key(e, true);
             if (e.repeat || !e.target.name?.startsWith("keys_") || e.ctrlKey || e.altKey || e.metaKey || !key) return;
             e.stopPropagation();
@@ -566,19 +580,7 @@ window.addEventListener(
             },
             false
         );
-        document.forms[0].onchange = function (e) {
-            if (e.stopPropagation) e.stopPropagation();
-            var defval,
-                t = e.target;
-            if (t.form_saved) delete t.form_saved;
-            else if (t.parentNode.dataset["form"] || t.parentNode.parentNode.dataset["form"]) defval = "default";
-            else if (t.name.indexOf("_") > 0) defval = "def";
-            if (!defval) return;
-            if ((t.type === "checkbox" && t[defval + "Checked"] !== t.checked) || (t.type !== "checkbox" && t[defval + "Value"] != t.value))
-                input_changes[t.name] = true;
-            else delete input_changes[t.name];
-            $("save_button").classList.toggle("alert", !!Object.keys(input_changes).length);
-        };
+        document.forms[0].onchange = onValueChange;
         var reset_button = $("reset_button");
         reset_button.reset = function () {
             delete reset_button.pending;

@@ -71,6 +71,7 @@ var sieve_sec,
                                 SieveUI.sieve[rname] = SieveUI.sieve[t.parentNode.rule];
                                 delete SieveUI.sieve[t.parentNode.rule];
                             }
+                            $("save_button").classList.add("alert");
                         }
                         t.textContent = t.parentNode.rule = rname;
                         t.contentEditable = false;
@@ -388,7 +389,7 @@ var sieve_sec,
             for (const el of vals) {
                 if (el.id) {
                     const inp_name = el.id.split("_");
-                    el.defaultChecked = el.checked = sd[inp_name[1]] && sd[inp_name[1]] & (inp_name[0] === "img" ? 2 : 1);
+                    el.defChecked = el.checked = !!(sd[inp_name[1]] && sd[inp_name[1]] & (inp_name[0] === "img" ? 2 : 1));
                     el.id += c;
                     el.nextSibling.setAttribute("for", el.id);
                     el.nextSibling.title = _("SIV_" + inp_name[1].toUpperCase());
@@ -423,11 +424,11 @@ var sieve_sec,
                     });
                     editor.renderer.setScrollMargin(4, 4, 0, 0);
                     editor.setKeyboardHandler("ace/keyboard/vscode");
-                    if (!small) {
-                        editor.on('focus', function (ev) {
-                            ev.target.parentElement.classList.add("tar_focus");
-                        });
-                    }
+
+                    const textArea = el.querySelector(":scope > textarea");
+                    textArea.defValue = value || "";
+                    textArea.dataset.id = el.dataset.name + c;
+                    editor.on('blur', onValueChange);
                 } else if (el.dataset.name) {
                     if (sd[el.dataset.name])
                         if (el.type === "checkbox") {
@@ -598,13 +599,13 @@ var sieve_sec,
                 for (let i = 0; i < list.length; ++i) {
                     sieve_container.removeChild(list[i]);
                     delete SieveUI.sieve[list[i].rule];
-                    $("save_button").classList.add("alert");
                 }
             } else {
                 sieve_container.textContent = "";
                 SieveUI.sieve = {};
                 $("save_button").click();
             }
+            $("save_button").classList.add("alert");
             this.countRules();
         },
         rightClick: function (e) {
