@@ -2573,6 +2573,7 @@
                     }
                 }
                 if (isHDUrl) url = url.slice(1);
+                if (typeof url !== "string") return;
                 if (url.indexOf("&amp;") !== -1) url = url.replace(/&amp;/g, "&");
                 new Image().src = url[1] === "/" ? PVI.httpPrepend(url) : url;
                 return;
