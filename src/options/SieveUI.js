@@ -54,8 +54,14 @@ var sieve_sec,
                     ) {
                         t.parentNode.parentNode.removeChild(t.parentNode);
                         SieveUI.countRules();
-                    } else if (t.textContent) {
-                        rname = rname.replace(/[\s,]+/g, "_").substr(0, 50);
+
+                    } else {
+                        if (e.key === "Escape" && t.parentNode.rule) {
+                            rname = t.parentNode.rule;
+                        }
+
+                        if (rname) {
+                            rname = rname.replace(/[\s,\r\n]+/g, "_").substring(0, 50);
                         if (t.parentNode.rule !== rname) {
                             if (SieveUI.sieve[rname]) {
                                 color_trans(t, "red");
@@ -72,6 +78,7 @@ var sieve_sec,
                         if (e.code === "Enter") {
                             t = t.parentNode.querySelector('input[type="text"]');
                             if (t) t.focus();
+                            }
                         }
                     }
                 } else if (t.isContentEditable || t.nodeName === "INPUT" || t.nodeName === "TEXTAREA") {
