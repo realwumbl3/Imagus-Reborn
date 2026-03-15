@@ -400,7 +400,7 @@ var sieve_sec,
                     let small = el.classList.contains("tar_small");
                     let isCode = value.startsWith(":");
                     let editor = ace.edit(el, {
-                        mode: !isCode ? "ace/mode/tex" : "ace/mode/javascript",
+                        mode: !isCode ? "ace/mode/regex" : "ace/mode/javascript",
                         theme: "ace/theme/chrome",
                         useWorker: false,
                         selectionStyle: "text",
