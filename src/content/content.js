@@ -2409,7 +2409,7 @@
         showHVR: function (visible = true, target) {
             clearTimeout(PVI.timers.hvr_hide);
             if (!visible) {
-                if (!target || target === PVI.TRG || target === PVI.DIV) {
+                if (!target || target === PVI.TRG || PVI.DIV.contains(target)) {
                     PVI.timers.hvr_hide = setTimeout(() => PVI.HVR.style.opacity = "0", 0);
                 }
                 return;
