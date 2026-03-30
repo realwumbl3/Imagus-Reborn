@@ -642,3 +642,20 @@ chrome.runtime.onInstalled.addListener(function (e) {
 chrome.runtime.onMessage?.addListener(onMessage);
 
 keepAlive();
+
+// Add context menu to toolbar button to open options page (Firefox only)
+if (platform === "firefox" && chrome.contextMenus) {
+    chrome.runtime.onInstalled.addListener(() => {
+        chrome.contextMenus.create({
+            id: "open-options",
+            title: "Options",
+            contexts: ["action"]
+        });
+    });
+
+    chrome.contextMenus.onClicked.addListener((info, tab) => {
+        if (info.menuItemId === "open-options") {
+            chrome.runtime.openOptionsPage();
+        }
+    });
+}
