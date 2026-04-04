@@ -12,6 +12,34 @@
         el.style.transform = ori;
     };
 
+    var rotate = function (deg) {
+        deg = typeof deg === 'number' ? deg : (deg ? 90 : -90);
+        PVI.DIV.curdeg += deg;
+        PVI.DIV.curdeg %= 360;
+        if (PVI.CAP && PVI.CAP.textContent && PVI.CAP.state !== 0) {
+            PVI.CAP.style.display = PVI.DIV.curdeg ? "none" : "block";
+        }
+        PVI.DIV.style.transform = PVI.DIV.curdeg ? "rotate(" + PVI.DIV.curdeg + "deg)" : "";
+        PVI.DIV.dataset.rotate = PVI.DIV.curdeg;
+        if (deg === 0) return;
+        if (PVI.fullZm) {
+            PVI.m_move();
+        } else {
+            PVI.show();
+        }
+    }
+
+    var open = function (e) {
+        let src = PVI.EXTENSION?.VIDEOJS?.player?.src() || PVI.CNT.src;
+        if (PVI.galleryState === 2 && PVI.TRG?.href) {
+            src = PVI.TRG.href
+        }
+        if (src) {
+            Port.send({ cmd: "open", url: src.replace(rgxHash, ""), nf: e?.shiftKey });
+            if (e && !e.shiftKey && !PVI.fullZm) PVI.reset();
+        }
+    }
+
     var pdsp = function (e, d, p) {
         if (!e || !e.preventDefault || !e.stopPropagation) return;
         if (d === undefined || d === true) e.preventDefault();
@@ -63,6 +91,7 @@
     var mdownstart, winW, winH, topWinW, topWinH;
     var rgxHash = /#(?![?!].).*/;
     var rgxIsSVG = /\.svgz?$/i;
+    // var rgxIsSVG = /\.svgz?$|^data:image\/svg/i;
     var viewportDimensions = function (targetDoc) {
         var d = targetDoc || doc;
         d = (d.compatMode === "BackCompat" && d.body) || d.documentElement;
@@ -212,7 +241,15 @@
     };
 
     async function download(msg) {
-        const src = msg?.url || PVI.EXTENSION?.VIDEOJS?.player?.src() || PVI.CNT.src;
+        let src = msg?.url || PVI.EXTENSION?.VIDEOJS?.player?.src() || PVI.CNT.src;
+
+        if (PVI.galleryState === 2) {
+            let album = PVI.stack[PVI.TRG?.IMGS_album] || [];
+            if (album.length) {
+                src = album[album[0]]?.[0] || src;
+                if (Array.isArray(src)) src = src[0];
+            }
+        }
 
         if (msg?.alterDownload) {
             try {
@@ -240,6 +277,13 @@
         }
     }
 
+    function isVideo(src) {
+        return (
+            /^[^?#]+\.(?:m(?:4[abprv]|p[34])|og[agv]|webm|mov|mk[av]|f4v)(?:$|[?#])/i.test(src) ||
+            /#(mp[34]|og[gv]|webm)$/i.test(src)
+        )
+    }
+
     var PVI = {
         TRG: null,
         DIV: null,
@@ -252,7 +296,20 @@
         resolving: [],
         lastTRGStyle: { cursor: null, outline: null },
         iFrame: false,
+        /* state
+            0 - uninitialized - PVI.DIV not created
+            1 - hidden - PVI.DIV and PVI.LDR are in the DOM, but not displayed
+            2 - hiding - PVI.DIV or PVI.LDR is hiding
+            3 - loading - PVI.LDR is visible, but PVI.IMG is hidden
+            4 - visible - PVI.IMG is visible
+        */
         state: null,
+        /* gallery state
+            0 - not initialized
+            1 - ready, hidden
+            2 - visible
+        */
+        galleryState: 0,
         rgxHTTPs: /^https?:\/\/(?:www\.)?/,
         pageProtocol: win.location.protocol.replace(/^(?!https?:).+/, "http:"),
         palette: {
@@ -434,6 +491,152 @@
                 ${cfg.hz.hoverCss || ""}
             `;
 
+            let imagusStyle = doc.createElement("style");
+            imagusStyle.innerHTML = `
+                #imagus-menu {
+                    position: absolute;
+                    right: 8px;
+                    top: 8px;
+                    border-radius: 8px;
+                    /* max-height: calc(100% - 20px); */
+                    /* max-width: calc(100% - 20px); */
+                    overflow: hidden;
+                    padding: 6px;
+                    z-index: 10;
+                    display: none;
+                }
+                [data-fz="true"] > #imagus-menu {
+                    display: block;
+                }
+                [data-rotate="90"] #imagus-menu {
+                    left: 116px;
+                    top: -104px;
+                    bottom: unset;
+                    right: unset;
+                    rotate: -90deg;
+                }
+                [data-rotate="180"] #imagus-menu {
+                    left: 6px;
+                    top: unset;
+                    bottom: 6px;
+                    right: unset;
+                    rotate: 180deg;
+                }
+                [data-rotate="270"] #imagus-menu {
+                    left: unset;
+                    top: unset;
+                    bottom: -102px;
+                    right: 118px;
+                    rotate: 90deg;
+                }
+                #imagus-menu i {
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    opacity: 0;
+                    background: #e0e0e0;
+                    border-radius: 4px;
+                    font: 20px sans-serif;
+                }
+                #imagus-menu i:not(:first-child) {
+                    margin-top: 4px;
+                }
+                :hover > #imagus-menu {
+                    background: #0000004d;
+                }
+                :hover > #imagus-menu i {
+                    opacity: .5;
+                }
+                #imagus-menu i:hover {
+                    opacity: 1;
+                }
+
+                #imagus-glr {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+                    justify-content: flex-start;
+                    overflow: auto;
+                    overscroll-behavior: contain;
+                    cursor: default;
+                    z-index: 5;
+                    background: #dedede;
+                }
+                #imagus-glr > * {
+                    width: 150px;
+                    height: 150px;
+                    margin: 4px;
+                }
+                #imagus-glr video,
+                #imagus-glr img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    cursor: pointer;
+                    overflow-clip-margin: unset;
+                    background: white;
+                }
+                #imagus-glr > .vid {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                #imagus-glr > .vid:before,
+                #imagus-glr > .vid:after {
+                    content: "";
+                    position: absolute;
+                    opacity: 0.5;
+                    pointer-events: none;
+                }
+                #imagus-glr > .vid:before {
+                    background: #000000;
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 20px;
+                }
+                #imagus-glr > .vid:after {
+                    width: 0;
+                    height: 0;
+                    border-top: 22px solid transparent;
+                    border-bottom: 22px solid transparent;
+                    border-left: 34px solid #ffffff;
+                    margin-left: 8px;
+                }
+            `;
+            PVI.DIV.appendChild(imagusStyle);
+
+            // gallery container
+            PVI.GLR = doc.createElement("div");
+            PVI.GLR.id = 'imagus-glr';
+            PVI.GLR.style.display = 'none';
+            PVI.DIV.appendChild(PVI.GLR);
+            PVI.GLR.addEventListener('mousedown', pdsp, true);
+            PVI.GLR.addEventListener('click', PVI.galleryClick, true);
+            PVI.GLR.addEventListener("wheel", PVI.galleryWheeler, true);
+
+            // create popup menu
+            if (cfg.hz.fzToolbar) {
+                buildNodes(PVI.DIV, [{
+                    tag: "div",
+                    attrs: { id: "imagus-menu" },
+                    nodes: [
+                        { tag: "i", text: "G", attrs: { "data-action": "gallery", title: "Gallery" } },
+                        { tag: "i", text: "O", attrs: { "data-action": "open", title: "Open in new tab" } },
+                        { tag: "i", text: "S", attrs: { "data-action": "download", title: "Save" } },
+                        { tag: "i", text: "#", attrs: { "data-action": "goto", title: "Goto / Search" } },
+                        { tag: "i", text: "↻", attrs: { "data-action": "rotate", title: "Rotate right" } },
+                        { tag: "i", text: "P", attrs: { "data-action": "preferences", title: "Preferences" } },
+                    ]
+                }]);
+                PVI.MENU = PVI.DIV.querySelector("#imagus-menu");
+                PVI.MENU.addEventListener("click", PVI.menuClick);
+            }
+
             PVI.reset();
         },
 
@@ -543,7 +746,9 @@
                     h.style.color = PVI.palette[PVI.TRG.IMGS_HD === false ? "wh_fg_hd" : "wh_fg"];
                     h.textContent = (PVI.TRG.IMGS_SVG ? PVI.stack[PVI.IMG.src] : [PVI.CNT.naturalWidth, PVI.CNT.naturalHeight]).join("×");
                     const scale = Math.round(PVI.CNT.offsetHeight / PVI.CNT.naturalHeight * 100);
-                    if (scale !== 100) h.textContent += ` (${scale}%)`;
+                    if (scale !== 100 && Number.isFinite(scale) && PVI.galleryState < 2){
+                        h.textContent += ` (${scale}%)`;
+                    }
                 } else h.style.display = "none";
             }
 
@@ -604,6 +809,7 @@
             delete node.IMGS_HD;
             delete node.IMGS_HD_stack;
             delete node.IMGS_fallback_zoom;
+            delete node.IMGS_ext;
             if (!keepAlbum) delete node.IMGS_album;
             if (node.localName !== "a") return;
             var childNodes = node.querySelectorAll('img[src], :not(img)[style*="background-image"], b, i, u, strong, em, span, div');
@@ -1183,7 +1389,7 @@
                     box = PVI.DIV.style;
                     box.visibility = "hidden";
                     PVI.resize(PVI.resizeMode || 0);
-                    PVI.m_move();
+                    // PVI.m_move();
                     box.visibility = "visible";
                     PVI.updateCaption();
                 } else PVI.m_move();
@@ -1358,6 +1564,8 @@
             s = album[0];
             if (s === idx && manual && PVI.state > 3) return;
             album[0] = idx;
+
+            PVI.gallery(1);
             PVI.resetNode(PVI.TRG, true);
             PVI.CAP.style.display = "none";
             PVI.CAP.children[2].style.display = "none";
@@ -1422,7 +1630,7 @@
                 PVI.checkContentRediness(src);
                 return;
             }
-            if (/^[^?#]+\.(?:m(?:4[abprv]|p[34])|og[agv]|webm|mov|mk[av]|f4v)(?:$|[?#])/i.test(src) || /#(mp[34]|og[gv]|webm)$/i.test(src)) {
+            if (isVideo(src)) {
                 PVI.CNT = PVI.VID;
                 PVI.show("load");
                 PVI.VID.naturalWidth = 0;
@@ -1453,12 +1661,13 @@
                         var ratio = svg.width / svg.height;
                         clearInterval(PVI.timers.onReady);
                         doc.body.removeChild(svg);
-                        svg = null;
                         if (ratio) {
-                            PVI.stack[src] = [win.screen.width, Math.round(win.screen.width / ratio)];
+                            // PVI.stack[src] = [win.screen.width, Math.round(win.screen.width / ratio)];
+                            PVI.stack[src] = [svg.naturalWidth, svg.naturalHeight];
                             PVI.IMG.src = src;
                             PVI.assign_src();
                         } else PVI.show("Rload");
+                        svg = null;
                     }
                 }, 100);
                 doc.body.appendChild(svg);
@@ -1633,11 +1842,11 @@
                 if (PVI.interlacer) PVI.interlacer.style.display = "none";
             } else if (!PVI.TRG.IMGS_SVG) {
                 if (PVI.TRG !== PVI.HLP && PVI.TRG.IMGS_thumb && !PVI.isEnlargeable(PVI.TRG, PVI.IMG)) {
-                    if (PVI.TRG.IMGS_HD_stack && !PVI.TRG.IMGS_HD) {
+                    /* if (PVI.TRG.IMGS_HD_stack && !PVI.TRG.IMGS_HD) {
                         PVI.show("load");
                         PVI.key_action({ which: 9 });
                         return;
-                    }
+                    } */
                     if (!PVI.TRG.IMGS_fallback_zoom) {
                         PVI.not_enlargeable();
                         return;
@@ -1776,6 +1985,7 @@
             }
             PVI.DIV.curdeg = 0;
             PVI.DIV.style.transform = "";
+            PVI.DIV.dataset.rotate = "";
             PVI.HD_cursor(true);
             if (PVI.fullZm) {
                 PVI.fullZm = false;
@@ -1785,6 +1995,7 @@
                 win.addEventListener("mouseover", PVI.m_over, true);
                 doc.addEventListener("wheel", PVI.scroller, { capture: true, passive: true });
                 doc.documentElement.addEventListener("mouseleave", PVI.m_leave);
+                PVI.DIV.dataset.fz = "";
             }
             if (preventImmediateHover) {
                 PVI.lastScrollTRG = PVI.TRG;
@@ -1792,6 +2003,7 @@
             }
             PVI.showHVR(false, target);
             PVI.setCursor();
+            PVI.gallery(0);
             PVI.state = 1;
         },
 
@@ -1806,6 +2018,31 @@
                 PVI.freeze = !cfg.hz.deactivate;
                 PVI.keyup_freeze_on = false;
                 win.removeEventListener("keyup", PVI.keyup_freeze, true);
+            }
+        },
+
+        menuClick: function (e) {
+            switch (e.target.dataset?.action) {
+                case "gallery":
+                    PVI.gallery();
+                    break;
+                case "download":
+                    download();
+                    break;
+                case "goto":
+                    PVI.key_action({ which: 35, shiftKey: true });
+                    break;
+                case "preferences":
+                    Port.send({ cmd: "options" });
+                    break;
+                case "rotate":
+                    rotate(true);
+                    break;
+                case "open":
+                    open();
+                    break;
+                default:
+                    break;
             }
         },
 
@@ -1901,8 +2138,9 @@
                 } else if (key === "-" || key === "+" || key === "=") {
                     PVI.resize(key === "-" ? "-" : "+");
 
-                } else if (key === "Tab") {
-                    if (PVI.TRG.IMGS_HD_stack) {
+                } else if (key === cfg.keys.hz_gallery) {
+                    PVI.gallery();
+                    /* if (PVI.TRG.IMGS_HD_stack) {
                         if (PVI.CAP) PVI.CAP.style.display = "none";
                         PVI.TRG.IMGS_HD = !PVI.TRG.IMGS_HD;
                         key = PVI.TRG.IMGS_c || PVI.TRG.IMGS_c_resolved;
@@ -1912,7 +2150,7 @@
                     }
                     if (e.shiftKey) {
                         cfg.hz.hiRes = !cfg.hz.hiRes;
-                    }
+                    } */
 
                 } else if (key === "Esc" || key === cfg.keys.hz_reset) {
                     if (PVI.CNT === PVI.VID && (win.fullScreen || doc.fullscreenElement || (topWinW === win.screen.width && topWinH === win.screen.height))) {
@@ -1999,11 +2237,7 @@
                 } else if (key === cfg.keys.flipH) flip(PVI.CNT, 0);
                 else if (key === cfg.keys.flipV) flip(PVI.CNT, 1);
                 else if (key === cfg.keys.rotL || key === cfg.keys.rotR) {
-                    PVI.DIV.curdeg += key === cfg.keys.rotR ? 90 : -90;
-                    if (PVI.CAP && PVI.CAP.textContent && PVI.CAP.state !== 0) PVI.CAP.style.display = PVI.DIV.curdeg % 360 ? "none" : "block";
-                    PVI.DIV.style.transform = PVI.DIV.curdeg ? "rotate(" + PVI.DIV.curdeg + "deg)" : "";
-                    if (PVI.fullZm) PVI.m_move();
-                    else PVI.show();
+                    rotate(key === cfg.keys.rotR);
                 } else if (key === cfg.keys.hz_caption)
                     if (e.shiftKey) {
                         PVI.createCAP();
@@ -2028,10 +2262,7 @@
                 else if (key === cfg.keys.send) {
                     if (PVI.CNT === PVI.IMG) imageSendTo({ url: PVI.CNT.src, nf: e.shiftKey });
                 } else if (key === cfg.keys.hz_open) {
-                    if (PVI.CNT.src) {
-                        Port.send({ cmd: "open", url: PVI.CNT.src.replace(rgxHash, ""), nf: e.shiftKey });
-                        if (!e.shiftKey && !PVI.fullZm) PVI.reset();
-                    }
+                    open(e);
                 } else if (key === cfg.keys.prefs) {
                     Port.send({ cmd: "options" });
                     if (!PVI.fullZm) PVI.reset();
@@ -2044,15 +2275,91 @@
             if (pv) pdsp(e);
         },
 
+        gallery: function (state) {
+            let album = PVI.stack[PVI.TRG?.IMGS_album] || [];
+            if (album.length < 2) return;
+
+            PVI.galleryState = state ?? (PVI.galleryState === 2 ? 1 : 2);
+
+            PVI.GLR.style.display = PVI.galleryState === 2 ? "" : "none";
+
+            if (PVI.galleryState === 0) {
+                PVI.GLR.scrollTop = 0;
+                PVI.GLR.innerHTML = "";
+
+            } else if (PVI.galleryState === 1) {
+                if (state === undefined) {
+                    PVI.album(0);
+                }
+
+            } else {
+                PVI.fzEnable();
+                // PVI.EXTENSION?.VIDEOJS?.player?.dispose();
+                PVI.resetNode(PVI.TRG, true);
+
+                if (!PVI.GLR.childElementCount) {
+                    // calculate gallery dimensions
+                    const GRID_SIZE = 158;
+                    const ratio = window.innerWidth / window.innerHeight;
+                    const w = Math.floor(Math.ceil(Math.sqrt(album.length)) * Math.sqrt(ratio));
+                    const h = Math.max(2, Math.ceil(album.length / w));
+                    PVI.GLR._height = Math.floor(Math.min(h * GRID_SIZE, window.innerHeight / 1.4)) + 16;
+                    PVI.GLR._width  = Math.floor(Math.min(w * GRID_SIZE, window.innerWidth  / 1.4)) + 50;
+
+                    let nodes = [];
+                    for (let i = 0; i < album.length; i++) {
+                        if (!album[i][0]) continue;
+                        let src = album[i][0];
+                        let preview = album[i][2];
+                        if (Array.isArray(src)) src = src[0];
+                        if (!src) continue;
+                        if (src[0] === "#") src = PVI.httpPrepend(src.slice(1));
+                        let video = isVideo(src) || album[i][1]?.includes(` type="videojs"`);
+
+                        nodes.push({
+                            tag: "div",
+                            attrs: { class: video ? 'vid' : '' },
+                            nodes: [{
+                                tag: video && !preview ? "video" : "img",
+                                attrs: {
+                                    loading: "lazy",
+                                    preload: "metadata",
+                                    "data-idx": i,
+                                    src: preview || src
+                                }
+                            }]
+                        });
+                    }
+                    buildNodes(PVI.GLR, nodes);
+                    setTimeout(() => PVI.GLR.scrollTop = 0, 100);
+
+                } else {
+                    setTimeout(() => PVI.GLR.querySelector(`[data-idx="${album[0]}"]`)?.scrollIntoView({ block: "center" }), 100);
+                }
+                PVI.set(`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="${PVI.GLR._width}" height="${PVI.GLR._height}"></svg>`);
+            }
+        },
+
+        galleryClick: function (ev) {
+            ev.preventDefault();
+            if (ev.target.localName !== "img" && ev.target.localName !== "video") {
+                PVI.reset();
+                return;
+            }
+            let idx = ev.target.dataset.idx;
+            PVI.album("" + idx);
+        },
+
         switchToHiResInFZ: function () {
-            if (!PVI.fullZm || !PVI.TRG || cfg.hz.hiResOnFZ < 1) return false;
+            return false;
+            /* if (!PVI.fullZm || !PVI.TRG || cfg.hz.hiResOnFZ < 1) return false;
             if (PVI.TRG.IMGS_HD !== false) return false;
             if (PVI.IMG.naturalWidth < 800 && PVI.IMG.naturalHeight < 800) return false;
             var ratio = PVI.IMG.naturalWidth / PVI.IMG.naturalHeight;
             if ((ratio < 1 ? 1 / ratio : ratio) < cfg.hz.hiResOnFZ) return false;
             PVI.show("load");
             PVI.key_action({ which: 9 });
-            return true;
+            return true; */
         },
 
         fzEnable: function (e) {
@@ -2084,6 +2391,7 @@
             }
             if (!PVI.iFrame) win.addEventListener("mousemove", PVI.m_move, true);
             win.addEventListener("click", PVI.fzClickAct, true);
+            PVI.DIV.dataset.fz = true;
         },
 
         fzDragEnd: function () {
@@ -2098,9 +2406,19 @@
                 pdsp(e);
                 return;
             }
-            if (e.target === PVI.CAP || (e.target.parentNode && e.target.parentNode === PVI.CAP)) {
-                if (PVI.TRG.IMGS_HD_stack) PVI.key_action({ which: 9 });
-            } else if (e.target === PVI.VID)
+
+            if (PVI.GLR.contains(e.target) || PVI.MENU?.contains(e.target)) {
+                // clicking inside the gallery or menu - ignore
+                return;
+            }
+
+            if (PVI.DIV.contains(e.target) && PVI.GLR.childElementCount > 0) {
+                // click inside the popup and gallery is loaded - return to the gallery
+                PVI.gallery();
+                return;
+            }
+
+            if (e.target === PVI.VID)
                 if ((e.offsetY || e.layerY || 0) < Math.min(PVI.CNT.clientHeight - 40, (2 * PVI.CNT.clientHeight) / 3)) PVI.reset(true);
                 else {
                     if ((e.offsetY || e.layerY || 0) < PVI.CNT.clientHeight - 40 && (e.offsetY || e.layerY || 0) > (2 * PVI.CNT.clientHeight) / 3)
@@ -2214,6 +2532,10 @@
                     PVI.album(d ? 1 : -1, true);
                 }
                 pdsp(e);
+                return;
+
+            } else if (PVI.galleryState === 2 && PVI.GLR.contains(e.target)) {
+                // scroll over gallery
                 return;
 
             } else if (PVI.fullZm && PVI.fullZm < 4) {
@@ -2477,6 +2799,7 @@
 
         m_move: function (e) {
             if (e && PVI.x === e.clientX && PVI.y === e.clientY) return;
+            rotate(0);
             if (PVI.fullZm) {
                 if (PVI.shouldScroll(e) && (PVI.TRG.IMGS_album || PVI.isVideo() && (!cfg.hz.scrollVideoWithCtrl || e?.ctrlKey))) {
                     PVI.setCursor();

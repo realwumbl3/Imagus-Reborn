@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "Para continuar, tem de <a href=\"#\">permitir scripts do utilizador</a>."
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Mostrar barra de ferramentas"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "alternar modo galeria"
   }
 }

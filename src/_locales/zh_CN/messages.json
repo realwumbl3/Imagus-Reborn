@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "要继续，您必须 <a href=\"#\">允许用户脚本</a>。"
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "显示工具栏"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "切换图库模式"
   }
 }

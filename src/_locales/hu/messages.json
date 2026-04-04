@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "A folytatáshoz <a href=\"#\">engedélyeznie kell a felhasználói szkripteket</a>."
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Eszköztár megjelenítése"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "galéria mód váltása"
   }
 }

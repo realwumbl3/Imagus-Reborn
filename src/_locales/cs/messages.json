@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "Chcete-li pokračovat, musíte <a href=\"#\">povolit uživatelské skripty</a>."
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Zobrazit panel nástrojů"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "přepnout režim galerie"
   }
 }

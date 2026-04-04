@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "Um fortzufahren, müssen Sie <a href=\"#\">Benutzerskripte zulassen</a>."
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Symbolleiste anzeigen"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "Galeriemodus umschalten"
   }
 }

@@ -182,6 +182,9 @@
   "HZ_SC_FULLSPACE": {
     "message": "toggle using all available space"
   },
+  "HZ_SC_GALLERY": {
+    "message": "toggle gallery mode"
+  },
   "HZ_SC_CAPTION": {
     "message": "wrap caption (or hide it when <b>Shift</b> is held)"
   },
@@ -325,6 +328,9 @@
   },
   "HZ_CAP_TEXT": {
     "message": "Show caption text"
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Show toolbar"
   },
   "HZ_FZDEFAULT": {
     "message": "Always view in Full-zoom mode"

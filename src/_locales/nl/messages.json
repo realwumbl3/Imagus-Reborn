@@ -508,5 +508,11 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "Om verder te gaan, moet u <a href=\"#\">gebruikersscripts toestaan</a>."
+  },
+  "HZ_FZTOOLBAR": {
+    "message": "Werkbalk tonen"
+  },
+  "HZ_SC_GALLERY": {
+    "message": "schakel de galerijmodus in"
   }
 }
