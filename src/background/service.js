@@ -270,7 +270,7 @@ function onMessage(message, sender, sendResponse) {
             registerContentScripts();
             break;
         case "download":
-            download(msg, sender.tab?.incognito, sendResponse);
+            download(msg, sender.tab, sendResponse);
             break;
         case "history":
             if (chrome.extension?.inIncognitoContext || sender.tab?.incognito) break;
@@ -407,33 +407,9 @@ function sanitizeFilename(filename) {
     return filename.replace(/[\\/:*?"<>|\r\n\x00-\x1f]/g, "_");
 }
 
-async function download(msg, incognito, sendResponse) {
+const downloadItems = {};
+async function download(msg, tab, sendResponse) {
     if (!msg.url) return;
-
-    if (!msg.alterDownload) {
-        /* await chrome.notifications.create(
-            "imagus_download",
-            {
-                title: manifest.name,
-                message: "Download started...",
-                type: "basic",
-                iconUrl: "/common/img/icon.png",
-            },
-        ); */
-
-        let resp = await fetch(msg.url, {
-            method: "get",
-            headers: {
-                "Range": "bytes=0-0"
-            }
-        });
-        if (!resp.ok || resp.redirected) {
-            msg.alterDownload = true;
-            sendResponse(msg);
-
-            return;
-        }
-    }
 
     const ext = msg.priorityExt ?? msg.ext;
 
@@ -441,7 +417,7 @@ async function download(msg, incognito, sendResponse) {
         msg.filename && ext
             ? `${msg.filename}.${ext}`
             : msg.urlName;
-    
+
     const params = {
         url: msg.blob ? URL.createObjectURL(msg.blob) : msg.url,
         filename: filename ? sanitizeFilename(filename) : undefined,
@@ -449,16 +425,51 @@ async function download(msg, incognito, sendResponse) {
     };
 
     if (platform === "firefox") {
-        params.incognito = incognito;
+        params.incognito = tab.incognito;
     }
 
-    chrome.downloads.download(params)
-}
+    let id = await chrome.downloads.download(params);
 
-/* chrome.downloads.onChanged.addListener(change => {
-    if (!change.state) return;
-    chrome.notifications.clear("imagus_download");
+    // save info in case we need to use alternative downloading method
+    if (!msg.alterDownload) {
+        msg.tabId = tab.id;
+        msg.sendResponse = sendResponse;
+        downloadItems[id] = msg;
+    }
+}
+/* // seems like onDeterminingFilename exists only in Chrome, so commenting that out for now
+chrome.downloads.onDeterminingFilename?.addListener(function (item, suggest) {
+    if (!downloadItems[item.id]) return;
+    if (item.mime === "text/html") {
+        // calceling download of HTML files, most probably an error page
+        chrome.downloads.cancel(item.id);
+        const msg = downloadItems[item.id];
+
+        // request alternative download method
+        msg.alterDownload = true;
+        chrome.tabs.sendMessage(msg.tabId, msg);
+    }
+    delete downloadItems[item.id];
 }); */
+
+chrome.downloads.onChanged.addListener(function (delta) {
+    console.log(delta);
+    if (!downloadItems[delta.id]) return;
+
+    if (delta.error || /\.html?$/.exec(delta.filename?.current)) {
+        // calceling download of HTML files, most probably an error page
+        chrome.downloads.cancel(delta.id);
+        chrome.downloads.erase({ id: delta.id });
+        const msg = downloadItems[delta.id];
+
+        // request alternative download method
+        msg.alterDownload = true;
+        msg.sendResponse(msg);
+        delete downloadItems[delta.id];
+        // chrome.tabs.sendMessage(msg.tabId, msg);
+    }
+});
+
 
 function keepAlive() {
     // keep the service worker alive
