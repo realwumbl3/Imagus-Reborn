@@ -1945,7 +1945,7 @@
 
                         } else if (key === "Up" || key === "Down") {
                             if (e.shiftKey) {
-                                PVI.VID.playbackRate *= key === "Up" ? 4 / 3 : 0.75;
+                                PVI.VID.playbackRate *= key === "Up" ? 1.05 : (1 / 1.05);
                             } else {
                                 const delta = key === "Down" ? -0.05 : 0.05;
                                 PVI.VID.volume = Math.max(0, Math.min(1, PVI.VID.volume + delta));
