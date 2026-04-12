@@ -514,5 +514,8 @@
   },
   "HZ_SC_GALLERY": {
     "message": "schakel de galerijmodus in"
+  },
+  "SC_HIRES": {
+    "message": "hoge resolutie afbeelding schakelen"
   }
 }

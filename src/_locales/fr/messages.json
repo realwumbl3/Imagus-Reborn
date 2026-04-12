@@ -514,5 +514,8 @@
   },
   "HZ_SC_GALLERY": {
     "message": "basculer en mode galerie"
+  },
+  "SC_HIRES": {
+    "message": "basculer l'image haute résolution"
   }
 }

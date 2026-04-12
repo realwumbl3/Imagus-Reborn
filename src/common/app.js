@@ -117,7 +117,7 @@ async function readCfg() {
 const shortcut = {
     keys1: {
         8: "BS",
-        9: "TAB",
+        9: "Tab",
         27: "Esc",
         45: "Ins",
         46: "Del",

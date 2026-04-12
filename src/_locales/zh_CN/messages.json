@@ -514,5 +514,8 @@
   },
   "HZ_SC_GALLERY": {
     "message": "切换图库模式"
+  },
+  "SC_HIRES": {
+    "message": "切换高分辨率图像"
   }
 }

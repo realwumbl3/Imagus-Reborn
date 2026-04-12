@@ -71,11 +71,11 @@
 		"flipV": "W",
 		"prefs": "P",
 		"send": "S",
+		"hiResToggle": "Tab",
 		"hz_toggle": "D",
 		"hz_preload": "L",
 		"hz_fullZm": "Z",
 		"hz_fullSpace": "F",
-		"hz_gallery": "TAB",
 		"hz_caption": "C",
 		"hz_open": "O",
 		"hz_history": "H"

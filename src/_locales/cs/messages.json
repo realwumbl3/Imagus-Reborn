@@ -514,5 +514,8 @@
   },
   "HZ_SC_GALLERY": {
     "message": "přepnout režim galerie"
+  },
+  "SC_HIRES": {
+    "message": "přepnout obrázek s vysokým rozlišením"
   }
 }

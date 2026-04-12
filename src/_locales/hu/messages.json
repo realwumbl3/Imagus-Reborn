@@ -514,5 +514,8 @@
   },
   "HZ_SC_GALLERY": {
     "message": "galéria mód váltása"
+  },
+  "SC_HIRES": {
+    "message": "nagy felbontású kép váltása"
   }
 }

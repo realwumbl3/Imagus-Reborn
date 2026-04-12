@@ -1856,11 +1856,11 @@
                 if (PVI.interlacer) PVI.interlacer.style.display = "none";
             } else if (!PVI.TRG.IMGS_SVG) {
                 if (PVI.TRG !== PVI.HLP && PVI.TRG.IMGS_thumb && !PVI.isEnlargeable(PVI.TRG, PVI.IMG)) {
-                    /* if (PVI.TRG.IMGS_HD_stack && !PVI.TRG.IMGS_HD) {
+                    if (PVI.TRG.IMGS_HD_stack && !PVI.TRG.IMGS_HD) {
                         PVI.show("load");
-                        PVI.key_action({ which: 9 });
+                        PVI.hiResToggle();
                         return;
-                    } */
+                    }
                     if (!PVI.TRG.IMGS_fallback_zoom) {
                         PVI.not_enlargeable();
                         return;
@@ -2163,17 +2163,9 @@
 
                 } else if (key === cfg.keys.hz_gallery) {
                     PVI.gallery();
-                    /* if (PVI.TRG.IMGS_HD_stack) {
-                        if (PVI.CAP) PVI.CAP.style.display = "none";
-                        PVI.TRG.IMGS_HD = !PVI.TRG.IMGS_HD;
-                        key = PVI.TRG.IMGS_c || PVI.TRG.IMGS_c_resolved;
-                        delete PVI.TRG.IMGS_c;
-                        PVI.set(PVI.TRG.IMGS_HD_stack);
-                        PVI.TRG.IMGS_HD_stack = key;
-                    }
-                    if (e.shiftKey) {
-                        cfg.hz.hiRes = !cfg.hz.hiRes;
-                    } */
+
+                } else if (key === cfg.keys.hiResToggle) {
+                    PVI.hiResToggle(e);
 
                 } else if (key === "Esc" || key === cfg.keys.hz_reset) {
                     if (PVI.CNT === PVI.VID && (win.fullScreen || doc.fullscreenElement || (topWinW === win.screen.width && topWinH === win.screen.height))) {
@@ -2373,16 +2365,29 @@
             PVI.album("" + idx);
         },
 
+        hiResToggle: function(e) {
+            if (PVI.TRG.IMGS_HD_stack) {
+                if (PVI.CAP) PVI.CAP.style.display = "none";
+                PVI.TRG.IMGS_HD = !PVI.TRG.IMGS_HD;
+                const stack = PVI.TRG.IMGS_c || PVI.TRG.IMGS_c_resolved;
+                delete PVI.TRG.IMGS_c;
+                PVI.set(PVI.TRG.IMGS_HD_stack);
+                PVI.TRG.IMGS_HD_stack = stack;
+            }
+            if (e?.shiftKey) {
+                cfg.hz.hiRes = !cfg.hz.hiRes;
+            }
+        },
+
         switchToHiResInFZ: function () {
-            return false;
-            /* if (!PVI.fullZm || !PVI.TRG || cfg.hz.hiResOnFZ < 1) return false;
+            if (!PVI.fullZm || !PVI.TRG || cfg.hz.hiResOnFZ < 1) return false;
             if (PVI.TRG.IMGS_HD !== false) return false;
             if (PVI.IMG.naturalWidth < 800 && PVI.IMG.naturalHeight < 800) return false;
             var ratio = PVI.IMG.naturalWidth / PVI.IMG.naturalHeight;
             if ((ratio < 1 ? 1 / ratio : ratio) < cfg.hz.hiResOnFZ) return false;
             PVI.show("load");
-            PVI.key_action({ which: 9 });
-            return true; */
+            PVI.hiResToggle();
+            return true;
         },
 
         fzEnable: function (e) {
