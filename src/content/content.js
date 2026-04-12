@@ -49,7 +49,9 @@
             src = PVI.TRG.href
         }
         if (src) {
-            Port.send({ cmd: "open", url: src.replace(rgxHash, ""), nf: e?.shiftKey });
+            src = src.replace(rgxHash, "");
+            window.open(src);
+            // Port.send({ cmd: "open", url: src, nf: e?.shiftKey });
             if (e && !e.shiftKey && !PVI.fullZm) PVI.reset();
         }
     }
