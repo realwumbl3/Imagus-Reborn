@@ -1,6 +1,7 @@
 {
 	"hz": {
 		"deactivate": 1,
+		"debugRules": false,
 		"actTrigger": "ctrl",
 		"delay": 300,
 		"delayOnIdle": true,

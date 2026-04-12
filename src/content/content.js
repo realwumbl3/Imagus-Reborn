@@ -963,7 +963,12 @@
         toFunction: function (rule, param, inline) {
             if (typeof rule[param] !== "function" && (inline ? /^:\s*\S/ : /^:\n\s*\S/).test(rule[param])) {
                 try {
-                    rule[param] = Function("var $ = arguments; " + (inline ? "return " : "") + rule[param].slice(1)).bind(PVI);
+                    rule[param] = Function(
+                        (cfg.hz.debugRules ? "debugger;\n" : "") +
+                        "var $ = arguments; " +
+                        (inline ? "return " : "") +
+                        rule[param].slice(1)
+                    ).bind(PVI);
                 } catch (ex) {
                     console.error(cfg.app?.name + ": " + param + " - " + ex.message);
                     return false;
@@ -3127,7 +3132,13 @@
                 if (!d.return_url) PVI.create();
                 if (!d.cache && (d.m === true || d.params.rule.skip_resolve)) {
                     try {
-                        if (rule.res === 1 && typeof d.params.rule.req_res === "string") rule.res = Function("$", d.params.rule.req_res);
+                        if (rule.res === 1 && typeof d.params.rule.req_res === "string") {
+                            rule.res = Function(
+                                "$",
+                                (cfg.hz.debugRules ? "debugger;\n" : "") +
+                                d.params.rule.req_res
+                            );
+                        }
                         PVI.node = trg;
                         d.m = rule.res.call(PVI, d.params);
                     } catch (ex) {

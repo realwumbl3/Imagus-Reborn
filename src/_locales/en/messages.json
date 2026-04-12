@@ -520,5 +520,8 @@
   },
   "ALLOW_USER_SCRIPTS_FF": {
     "message": "To continue you have to <a href=\"#\">allow User Scripts</a>."
+  },
+  "DEBUG_RULES": {
+    "message": "Debug rules"
   }
 }
