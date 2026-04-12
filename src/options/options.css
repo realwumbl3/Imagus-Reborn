@@ -263,6 +263,7 @@ nav > .active {
     box-sizing: border-box;
     display: inline-block;
     line-height: 18px;
+    flex-shrink: 0;
 }
 .prow.left {
     justify-content: flex-start;
@@ -274,6 +275,7 @@ nav > .active {
 }
 label {
     cursor: pointer;
+    flex-grow: 1;
 }
 form .prow:not(.advanced),
 body.advanced form .advanced {
