@@ -2175,7 +2175,7 @@
                 } else if (key === "-" || key === "+" || key === "=") {
                     PVI.resize(key === "-" ? "-" : "+");
 
-                } else if (key === cfg.keys.hz_gallery) {
+                } else if (key === cfg.keys.gallery) {
                     PVI.gallery();
 
                 } else if (key === cfg.keys.hiResToggle) {
