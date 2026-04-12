@@ -295,12 +295,11 @@ function onMessage(message, sender, sendResponse) {
                     if (sender?.tab?.id) {
                         tabOptions.openerTabId = sender.tab.id;
                     }
-                    try {
-                        chrome.tabs.create(tabOptions);
-                    } catch (error) {
+                    chrome.tabs.create(tabOptions)
+                    .catch(error => {
                         delete tabOptions.openerTabId;
                         chrome.tabs.create(tabOptions);
-                    }
+                    });
                 }
             });
             break;
