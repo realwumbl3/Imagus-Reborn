@@ -508,7 +508,7 @@
             `;
 
             let imagusStyle = doc.createElement("style");
-            imagusStyle.innerHTML = `
+            imagusStyle.innerText = `
                 #imagus-menu {
                     position: absolute;
                     right: 8px;
@@ -520,6 +520,8 @@
                     padding: 6px;
                     z-index: 10;
                     display: none;
+                    background: #0000004d;
+                    opacity: 0;
                 }
                 [data-fz="true"] > #imagus-menu {
                     display: block;
@@ -556,15 +558,19 @@
                     background: #e0e0e0;
                     border-radius: 4px;
                     font: 20px sans-serif;
+                    opacity: .5;
                 }
                 #imagus-menu i:not(:first-child) {
                     margin-top: 4px;
                 }
                 :hover > #imagus-menu {
-                    background: #0000004d;
+                    opacity: 1;
                 }
-                :hover > #imagus-menu i {
-                    opacity: .5;
+                #imagus-menu:hover {
+                    background: #00000066;
+                }
+                #imagus-menu:hover i:not(:hover) {
+                    opacity: .7;
                 }
                 #imagus-menu i:hover {
                     opacity: 1;
@@ -596,6 +602,7 @@
                     cursor: pointer;
                     overflow-clip-margin: unset;
                     background: white;
+                    margin: 0;
                 }
                 #imagus-glr > .vid {
                     display: flex;
